@@ -19,5 +19,7 @@ public class SpringTest {
         for (User user:all){
             System.out.println(user);
         }
+
+        System.out.println("这是我修改的git 版本信息");
     }
 }
