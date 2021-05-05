@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop.xsd
+	http://www.springframework.org/schema/tx
+	http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+<!--    开启注解的扫描: 我们只需要扫描 service和 dao 层  controller 不需要我们去处理-->
+    <context:component-scan base-package="service,dao"></context:component-scan>
+
+<!--Spring 整合Mybatis 配置文件-->
+<!--   配置连接池-->
+
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="driverClass" value="com.mysql.cj.jdbc.Driver"></property>
+        <property name="user" value="root"></property>
+        <property name="password" value="123456"></property>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/ssm?useUnicode=true&amp;characterEncoding=utf-8&amp;&amp;rewriteBatchedStatements=true"></property>
+    </bean>
+
+    <!--    配置连接工厂对象-->
+<bean id="sessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+    <property name="dataSource" ref="dataSource"></property>
+</bean>
+
+    <!--    配置接口所在的包-->
+<bean id="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+    <property name="basePackage" value="dao"></property>
+</bean>
+
+<!--    配置Spring 框架的声明式事务管理-->
+<!--    配置事务管理器-->
+<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    <property name="dataSource" ref="dataSource"/>
+</bean>
+<!--    配置事务通知 也可以配置事务的隔离级别 等等-->
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="find" read-only="true"/>
+        </tx:attributes>
+    </tx:advice>
+<!--    配置AOP 增强   execution 表达式,表示为哪个方法进行增强-->
+    <aop:config>
+        <aop:advisor advice-ref="txAdvice" pointcut="execution(* service.UserServiceImpl.*(..)))"/>
+    </aop:config>
+</beans>
