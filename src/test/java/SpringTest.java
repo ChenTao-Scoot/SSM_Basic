@@ -21,5 +21,7 @@ public class SpringTest {
         }
 
         System.out.println("这是我修改的git 版本信息");
+        
+        System.out.println("看看你能不能拉取下来")
     }
 }
